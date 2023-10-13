@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Super admin model for super admin users
+model SuperAdmin {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       String   @default("super_admin")
+  bio        String?
+  profileImg String?
+  admins     Admin[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("super_admins")
+}
+
+// Admin model for admin users
+model Admin {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  password     String
+  role         String     @default("admin")
+  bio          String
+  profileImg   String?
+  superAdmins  SuperAdmin @relation(fields: [superAdminId], references: [id])
+  superAdminId String
+  bookings     Booking[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  users        User[]
+  services     Service[]
+  Content      Content[]
+
+  @@map("admins")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  bio           String
+  profileImg    String?
+  role          String         @default("user")
+  bookings      Booking[]
+  reviews       Review[]
+  notifications Notification[]
+  adminId       String
+  admin         Admin          @relation(fields: [adminId], references: [id])
+  feedbacks     Feedback[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("users")
+}
+
+// Services model for service listings
+model Service {
+  id           String    @id @default(uuid())
+  name         String
+  description  String
+  price        Float
+  location     String
+  category     String
+  availability Boolean
+  bookings     Booking[]
+  reviews      Review[]
+  adminId      String
+  admin        Admin     @relation(fields: [adminId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("services")
+}
+
+// Booking model for service booking
+model Booking {
+  id        String        @id @default(uuid())
+  date      DateTime
+  status    BookingStatus @default(pending) // or use an enum
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  serviceId String
+  service   Service       @relation(fields: [serviceId], references: [id])
+  adminId   String
+  admin     Admin         @relation(fields: [adminId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+// Content model for website content control
+model Content {
+  id        String   @id @default(uuid())
+  title     String
+  body      String
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contents")
+}
+
+// Review model for user reviews and ratings
+model Review {
+  id        String   @id @default(uuid())
+  rating    Float
+  comment   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  comment   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedbacks")
+}
+
+// Notification model for user notifications (optional)
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String // Notification content
+  type      String // Notification type (e.g., 'booking', 'reminder', 'update')
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+enum BookingStatus {
+  pending
+  fixing
+  fixed
+}
