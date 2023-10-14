@@ -11,20 +11,23 @@ const createUserZodSchema = z.object({
     password: z.string({
       required_error: 'Password is required',
     }),
-    role: z.string({
-      required_error: 'Role is required',
-    }),
-    contactNo: z.string({
-      required_error: 'Contact Number is required',
-    }),
-    address: z.string({
-      required_error: 'Address is required',
-    }),
-    profileImg: z.string({
-      required_error: 'Profile image is required',
-    }),
+    role: z.string().optional(),
   }),
 });
+// const createAdminUserZodSchema = z.object({
+//   body: z.object({
+//     name: z.string({
+//       required_error: 'Name is required',
+//     }),
+//     email: z.string({
+//       required_error: 'Email is required',
+//     }),
+//     password: z.string({
+//       required_error: 'Password is required',
+//     }),
+//     profileImg: z.string().optional(),
+//   }),
+// });
 const updateUserZodSchema = z.object({
   body: z.object({
     name: z.string().optional(),
@@ -59,4 +62,5 @@ export const UserValidation = {
   createUserZodSchema,
   loginUserZodSchema,
   refreshTokenZodSchema,
+  // createAdminUserZodSchema,
 };

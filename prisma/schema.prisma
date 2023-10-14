@@ -10,120 +10,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Super admin model for super admin users
-model SuperAdmin {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  role       String   @default("super_admin")
-  bio        String?
-  profileImg String?
-  admins     Admin[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@map("super_admins")
-}
-
-// Admin model for admin users
-model Admin {
-  id           String     @id @default(uuid())
-  name         String
-  email        String     @unique
-  password     String
-  role         String     @default("admin")
-  bio          String
-  profileImg   String?
-  superAdmins  SuperAdmin @relation(fields: [superAdminId], references: [id])
-  superAdminId String
-  bookings     Booking[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  users        User[]
-  services     Service[]
-  Content      Content[]
-
-  @@map("admins")
-}
-
+// Define the User model
 model User {
-  id            String         @id @default(uuid())
-  name          String
-  email         String         @unique
-  password      String
-  bio           String
-  profileImg    String?
-  role          String         @default("user")
-  bookings      Booking[]
-  reviews       Review[]
-  notifications Notification[]
-  adminId       String
-  admin         Admin          @relation(fields: [adminId], references: [id])
-  feedbacks     Feedback[]
+  id            String         @id @default(uuid()) // Unique user ID
+  email         String         @unique // User's email
+  password      String // User's hashed password
+  name          String // User's name
+  role          UserRole       @default(customer)
+  profile       Profile?       @relation(fields: [profileId], references: [id]) // User's profile information
+  bookings      Booking[] // User's bookings
+  reviews       Review[] // User's reviews
+  profileId     String?
+  Notifications Notification[]
+  Feedback      Feedback[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
   @@map("users")
 }
 
-// Services model for service listings
+// Define user roles
+enum UserRole {
+  customer
+  admin
+  super_admin
+}
+
+// Define the Profile model
+model Profile {
+  id         String   @id @default(uuid()) // Unique profile ID
+  username   String   @unique
+  userId     String // Foreign key to User
+  // Add other user profile fields (e.g., address, phone number, etc.)
+  User       User[]
+  bio        String?
+  profileImg String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+// Define the Service model
 model Service {
-  id           String    @id @default(uuid())
-  name         String
-  description  String
-  price        Float
-  location     String
-  category     String
+  id           String   @id @default(uuid()) // Unique service ID
+  name         String // Service name
+  description  String? // Service description
+  price        Float // Service price
+  category     Category @relation(fields: [categoryId], references: [id]) // Service category
   availability Boolean
-  bookings     Booking[]
-  reviews      Review[]
-  adminId      String
-  admin        Admin     @relation(fields: [adminId], references: [id])
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  image        String
+  categoryId   String
+  Review       Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("services")
 }
 
-// Booking model for service booking
+// Define the Category model
+model Category {
+  id        String    @id @default(uuid()) // Unique category ID
+  name      String // Category name
+  // Add other category-related fields if needed
+  Service   Service[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// Define the Booking model
 model Booking {
-  id        String        @id @default(uuid())
-  date      DateTime
-  status    BookingStatus @default(pending) // or use an enum
-  userId    String
-  user      User          @relation(fields: [userId], references: [id])
-  serviceId String
-  service   Service       @relation(fields: [serviceId], references: [id])
-  adminId   String
-  admin     Admin         @relation(fields: [adminId], references: [id])
+  id        String        @id @default(uuid()) // Unique booking ID
+  userId    String // Foreign key to User
+  serviceId String // Foreign key to Service
+  status    BookingStatus @default(PENDING)
+  dateTime  DateTime // Date and time of the booking
+  // Add other booking-related fields if needed
+  User      User          @relation(fields: [userId], references: [id])
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
   @@map("bookings")
 }
 
-// Content model for website content control
-model Content {
-  id        String   @id @default(uuid())
-  title     String
-  body      String
-  adminId   String
-  admin     Admin    @relation(fields: [adminId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("contents")
+// Define booking statuses
+enum BookingStatus {
+  PENDING
+  FIXING
+  FIXED
+  CANCELED
+  // Add more statuses if needed
 }
 
-// Review model for user reviews and ratings
+// Define the Review model
 model Review {
-  id        String   @id @default(uuid())
-  rating    Float
-  comment   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  serviceId String
+  id        String   @id @default(uuid()) // Unique review ID
+  userId    String // Foreign key to User
+  serviceId String // Foreign key to Service
+  rating    Float // Rating given by the user
+  comment   String? // User's review comment
+  User      User     @relation(fields: [userId], references: [id])
   service   Service  @relation(fields: [serviceId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -131,15 +119,24 @@ model Review {
   @@map("reviews")
 }
 
-model Feedback {
-  id        String   @id @default(uuid())
-  comment   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Define the Administrator model
+model Administrator {
+  id        String    @id @default(uuid()) // Unique admin ID
+  email     String    @unique // Admin's email
+  password  String // Admin's hashed password
+  name      String // Admin's name
+  role      AdminRole // Admin role (admin, super_admin)
+  // Add other admin-related fields if needed
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  @@map("feedbacks")
+  @@map("administrators")
+}
+
+// Define admin roles
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
 }
 
 // Notification model for user notifications (optional)
@@ -155,8 +152,13 @@ model Notification {
   @@map("notifications")
 }
 
-enum BookingStatus {
-  pending
-  fixing
-  fixed
+model Feedback {
+  id        String   @id @default(uuid())
+  comment   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedbacks")
 }

@@ -11,7 +11,7 @@ router.patch(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),
   validateRequest(UserValidation.updateUserZodSchema),
-  UserController.updateSingleUser
+  UserController.updateSingleUser,
 );
 
 router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
@@ -19,7 +19,7 @@ router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),
-  UserController.deleteSingleUser
+  UserController.deleteSingleUser,
 );
 
 router.get('/', auth(ENUM_USER_ROLE.ADMIN), UserController.getAllUser);

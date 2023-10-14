@@ -7,15 +7,15 @@ import sendResponse from '../../../shared/sendResponse';
 import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interface';
 import { AuthUserService } from './auth.service';
 
-const createAdminAuthUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthUserService.createAdminAuthUser(req.body);
-  sendResponse<Partial<User>>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `${result?.role} Created Successfully!`,
-    data: result,
-  });
-});
+// const createAdminAuthUser = catchAsync(async (req: Request, res: Response) => {
+//   const result = await AuthUserService.createAdminAuthUser(req.body);
+//   sendResponse<Partial<User>>(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: `${result?.role} Created Successfully!`,
+//     data: result,
+//   });
+// });
 const createAuthUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthUserService.createAuthUser(req.body);
   sendResponse<Partial<User>>(res, {
@@ -45,46 +45,46 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
       data: others,
     });
 });
-const loginAdminUser = catchAsync(async (req: Request, res: Response) => {
-  const { ...loginData } = req.body;
-  const result = await AuthUserService.loginAdminUser(loginData);
-  const { refreshToken, ...others } = result;
-  // console.log(others);
-  const cookieOption = {
-    secure: config.env === 'production',
-    httpOnly: true,
-  };
+// const loginAdminUser = catchAsync(async (req: Request, res: Response) => {
+//   const { ...loginData } = req.body;
+//   const result = await AuthUserService.loginAdminUser(loginData);
+//   const { refreshToken, ...others } = result;
+//   // console.log(others);
+//   const cookieOption = {
+//     secure: config.env === 'production',
+//     httpOnly: true,
+//   };
 
-  res.cookie('refreshToken', refreshToken, cookieOption);
+//   res.cookie('refreshToken', refreshToken, cookieOption);
 
-  if (refreshToken)
-    sendResponse<ILoginUserResponse>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Admin Login Successfully',
-      data: others,
-    });
-});
-const loginSuperAdminUser = catchAsync(async (req: Request, res: Response) => {
-  const { ...loginData } = req.body;
-  const result = await AuthUserService.loginSuperAdminUser(loginData);
-  const { refreshToken, ...others } = result;
-  // console.log(others);
-  const cookieOption = {
-    secure: config.env === 'production',
-    httpOnly: true,
-  };
+//   if (refreshToken)
+//     sendResponse<ILoginUserResponse>(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: 'Admin Login Successfully',
+//       data: others,
+//     });
+// });
+// const loginSuperAdminUser = catchAsync(async (req: Request, res: Response) => {
+//   const { ...loginData } = req.body;
+//   const result = await AuthUserService.loginSuperAdminUser(loginData);
+//   const { refreshToken, ...others } = result;
+//   // console.log(others);
+//   const cookieOption = {
+//     secure: config.env === 'production',
+//     httpOnly: true,
+//   };
 
-  res.cookie('refreshToken', refreshToken, cookieOption);
+//   res.cookie('refreshToken', refreshToken, cookieOption);
 
-  if (refreshToken)
-    sendResponse<ILoginUserResponse>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Super Admin Login Successfully',
-      data: others,
-    });
-});
+//   if (refreshToken)
+//     sendResponse<ILoginUserResponse>(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: 'Super Admin Login Successfully',
+//       data: others,
+//     });
+// });
 
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
@@ -110,7 +110,7 @@ export const AuthUserController = {
   createAuthUser,
   loginUser,
   refreshToken,
-  createAdminAuthUser,
-  loginAdminUser,
-  loginSuperAdminUser,
+  // createAdminAuthUser,
+  // loginAdminUser,
+  // loginSuperAdminUser,
 };
