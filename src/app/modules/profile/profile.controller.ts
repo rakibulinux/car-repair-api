@@ -14,9 +14,8 @@ const getSingleProfile = catchAsync(async (req: Request, res: Response) => {
   if (accessToken) {
     const decodedToken = jwtHelpers.verifyToken(
       accessToken,
-      config.jwt.secret as Secret
+      config.jwt.secret as Secret,
     );
-    console.log(decodedToken);
     const result = await ProfileService.getSingleProfile(decodedToken);
     // console.log(result);
     sendResponse<User>(res, {
@@ -31,7 +30,40 @@ const getSingleProfile = catchAsync(async (req: Request, res: Response) => {
     });
   }
 });
+const updateSingleProfile = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const body = req.body;
+  const result = await ProfileService.updateSingleProfile(id, body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Updated Successfully!',
+    data: result,
+  });
+});
+// const updateSingleProfile = catchAsync(async (req: Request, res: Response) => {
+//   const accessToken: string | undefined = req.headers.authorization;
+//   if (accessToken) {
+//     const decodedToken = jwtHelpers.verifyToken(
+//       accessToken,
+//       config.jwt.secret as Secret,
+//     );
+//     console.log(decodedToken);
+//     const result = await ProfileService.updateSingleProfile(decodedToken);
+//     sendResponse<User>(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: `${
+//         result
+//           ? 'Get A Single Profile Successfully!'
+//           : `No Profile Find For This ID: ${req.params.id}`
+//       }`,
+//       data: result,
+//     });
+//   }
+// });
 
 export const ProfileController = {
   getSingleProfile,
+  updateSingleProfile,
 };

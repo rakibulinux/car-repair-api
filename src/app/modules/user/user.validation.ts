@@ -14,26 +14,17 @@ const createUserZodSchema = z.object({
     role: z.string({
       required_error: 'Role is required',
     }),
-    contactNo: z.string({
-      required_error: 'Contact Number is required',
-    }),
-    address: z.string({
-      required_error: 'Address is required',
-    }),
-    profileImage: z.string({
-      required_error: 'Profile image is required',
-    }),
   }),
 });
 const updateUserZodSchema = z.object({
   body: z.object({
     name: z.string().optional(),
-    email: z.string().optional(),
-    password: z.string().optional(),
-    role: z.string().optional(),
-    contactNo: z.string().optional(),
+    bio: z.string().optional(),
     address: z.string().optional(),
-    profileImage: z.string().optional(),
+    phoneNo: z.string().optional(),
+    bloodGroup: z.string().optional(),
+    gender: z.string().optional(),
+    profileImg: z.string().optional(),
   }),
 });
 

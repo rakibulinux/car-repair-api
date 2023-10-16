@@ -5,9 +5,22 @@ import { ProfileController } from './profile.controller';
 
 const router = express.Router();
 
+router.patch(
+  '/:id',
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
+  ProfileController.updateSingleProfile,
+);
 router.get(
-  '/',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPERADMIN),
+  '/:id',
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   ProfileController.getSingleProfile,
 );
 

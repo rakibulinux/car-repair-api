@@ -21,10 +21,11 @@ model User {
   bookings      Booking[] // User's bookings
   reviews       Review[] // User's reviews
   profileId     String?
-  Notifications Notification[]
-  Feedback      Feedback[]
+  notifications Notification[]
+  feedbacks     Feedback[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  posts         Post[]
 
   @@map("users")
 }
@@ -40,11 +41,14 @@ enum UserRole {
 model Profile {
   id         String   @id @default(uuid()) // Unique profile ID
   username   String   @unique
-  userId     String // Foreign key to User
   // Add other user profile fields (e.g., address, phone number, etc.)
-  User       User[]
+  user       User[]
   bio        String?
   profileImg String?
+  phoneNo    String?
+  address    String?
+  gender     String?
+  bloodGroup String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -53,17 +57,18 @@ model Profile {
 
 // Define the Service model
 model Service {
-  id           String   @id @default(uuid()) // Unique service ID
+  id           String    @id @default(uuid()) // Unique service ID
   name         String // Service name
   description  String? // Service description
   price        Float // Service price
-  category     Category @relation(fields: [categoryId], references: [id]) // Service category
+  category     Category  @relation(fields: [categoryId], references: [id]) // Service category
   availability Boolean
   image        String
   categoryId   String
-  Review       Review[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  reviews      Review[]
+  bookings     Booking[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("services")
 }
@@ -73,9 +78,11 @@ model Category {
   id        String    @id @default(uuid()) // Unique category ID
   name      String // Category name
   // Add other category-related fields if needed
-  Service   Service[]
+  services  Service[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  posts Post[]
 
   @@map("categories")
 }
@@ -88,9 +95,10 @@ model Booking {
   status    BookingStatus @default(PENDING)
   dateTime  DateTime // Date and time of the booking
   // Add other booking-related fields if needed
-  User      User          @relation(fields: [userId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  services  Service       @relation(fields: [serviceId], references: [id])
 
   @@map("bookings")
 }
@@ -111,15 +119,15 @@ model Review {
   serviceId String // Foreign key to Service
   rating    Float // Rating given by the user
   comment   String? // User's review comment
-  User      User     @relation(fields: [userId], references: [id])
-  service   Service  @relation(fields: [serviceId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  services  Service  @relation(fields: [serviceId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("reviews")
 }
 
-// Define the Administrator model
+// Define the Administrator model - Not Done
 model Administrator {
   id        String    @id @default(uuid()) // Unique admin ID
   email     String    @unique // Admin's email
@@ -139,7 +147,7 @@ enum AdminRole {
   SUPER_ADMIN
 }
 
-// Notification model for user notifications (optional)
+// Notification model for user notifications (optional) - Not Done
 model Notification {
   id        String   @id @default(uuid())
   userId    String
@@ -150,6 +158,20 @@ model Notification {
   updatedAt DateTime @updatedAt
 
   @@map("notifications")
+}
+
+model Post {
+  id         String    @id @default(uuid())
+  title      String
+  content    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  author     User?     @relation(fields: [authorId], references: [id])
+  authorId   String?
+  categoryId String
+  categories Category? @relation(fields: [categoryId], references: [id])
+
+  @@map("posts")
 }
 
 model Feedback {

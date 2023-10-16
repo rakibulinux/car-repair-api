@@ -7,14 +7,28 @@ import { UserValidation } from './user.validation';
 
 const router = express.Router();
 
+router.get('/admins', UserController.getAllAdmins);
+
 router.patch(
   '/:id',
-  auth(ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   validateRequest(UserValidation.updateUserZodSchema),
   UserController.updateSingleUser,
 );
 
-router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
+router.get(
+  '/:id',
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+    ENUM_USER_ROLE.SUPERADMIN,
+  ),
+  UserController.getSingleUser,
+);
 
 router.delete(
   '/:id',
@@ -22,6 +36,10 @@ router.delete(
   UserController.deleteSingleUser,
 );
 
-router.get('/', auth(ENUM_USER_ROLE.ADMIN), UserController.getAllUser);
+router.get(
+  '/',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPERADMIN),
+  UserController.getAllUsers,
+);
 
 export const UserRoute = router;

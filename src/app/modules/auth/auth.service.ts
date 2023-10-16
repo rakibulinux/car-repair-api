@@ -27,20 +27,61 @@ import { UserModel, beforeUserSave } from './auth.utils';
 //   });
 //   return result;
 // };
+// const createAuthUser = async (data: User): Promise<Partial<User>> => {
+//   await beforeUserSave(data);
+//   // console.log(afterHash);
+
+//   const result = await prisma.user.create({
+//     data, // Ensure the correct type here,
+//     select: {
+//       id: true,
+//       name: true,
+//       email: true,
+//       password: false,
+//       role: true,
+//     },
+//   });
+//   console.log(result);
+//   return result;
+// };
+
 const createAuthUser = async (data: User): Promise<Partial<User>> => {
   await beforeUserSave(data);
-  // console.log(afterHash);
-  const result = await prisma.user.create({
-    data, // Ensure the correct type here,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      password: false,
-      role: true,
-    },
+  console.log(data);
+  const email = data.email;
+  const atIndex = email.indexOf('@'); // Find the position of the '@' symbol
+  const username = email.slice(0, atIndex); // Extract the username
+  // Create a Prisma transaction
+  const result = await prisma.$transaction(async transaction => {
+    // Create a Profile
+    const profile = await transaction.profile.create({
+      data: {
+        username: username,
+      },
+    });
+    console.log('profile', profile);
+    // Create a User and associate it with the Profile
+    const user = await transaction.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        profileId: profile.id, // Associate the User with the Profile
+        // Add other user data
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+    console.log('user', user);
+
+    return user;
   });
-  console.log(result);
+
   return result;
 };
 

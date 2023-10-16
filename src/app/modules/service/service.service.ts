@@ -1,15 +1,27 @@
-import { Admin, Prisma } from '@prisma/client';
+import { Prisma, Service } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import { userSearchableFields } from './admin.constant';
-import { IUserFilterRequest, IUserResponse } from './admin.interface';
+import { serviceSearchableFields } from './service.constant';
+import { IServiceFilterRequest, IServiceResponse } from './service.interface';
 
-const getAllAdminUsers = async (
-  filters: IUserFilterRequest,
+const createService = async (data: Service): Promise<Service> => {
+  const result = await prisma.service.create({
+    data,
+    include: {
+      category: true,
+      bookings: true,
+      reviews: true,
+    },
+  });
+  return result;
+};
+
+const getAllServices = async (
+  filters: IServiceFilterRequest,
   pagination: IPaginationOptions,
-): Promise<IGenericResponse<IUserResponse[]>> => {
+): Promise<IGenericResponse<Service[]>> => {
   const { searchTerm, ...filtersData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(pagination);
@@ -17,7 +29,7 @@ const getAllAdminUsers = async (
   // Search needs $or for searching in specified fields
   if (searchTerm) {
     andConditions.push({
-      OR: userSearchableFields.map(field => ({
+      OR: serviceSearchableFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -25,7 +37,7 @@ const getAllAdminUsers = async (
       })),
     });
   }
-  const whereConditions: Prisma.AdminWhereInput =
+  const whereConditions: Prisma.ServiceWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
   if (Object.keys(filtersData).length) {
     andConditions.push({
@@ -40,25 +52,19 @@ const getAllAdminUsers = async (
     sortConditions[sortBy] = sortOrder;
   }
 
-  const result = await prisma.admin.findMany({
+  const result = await prisma.service.findMany({
     where: whereConditions,
     skip,
     take: limit,
     orderBy: sortConditions,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      password: false,
-      role: true,
-      bio: true,
+    include: {
       bookings: true,
-      createdAt: true,
-      updatedAt: true,
+      reviews: true,
+      category: true,
     },
   });
 
-  const total = await prisma.user.count();
+  const total = await prisma.service.count();
   return {
     meta: {
       total,
@@ -69,28 +75,24 @@ const getAllAdminUsers = async (
   };
 };
 
-const getSingleAdminUser = async (id: string) => {
-  const result = await prisma.admin.findUnique({
+const getSingleService = async (id: string) => {
+  const result = await prisma.service.findUnique({
     where: {
       id,
     },
     select: {
       id: true,
       name: true,
-      email: true,
-      password: false,
-      bio: true,
-      role: true,
-      profileImg: true,
+      bookings: true,
     },
   });
   return result;
 };
-const updateSingleAdminUser = async (
+const updateSingleService = async (
   id: string,
-  data: Partial<Admin>,
-): Promise<Partial<IUserResponse>> => {
-  const result = await prisma.admin.update({
+  data: Partial<Service>,
+): Promise<Partial<Service>> => {
+  const result = await prisma.service.update({
     where: {
       id,
     },
@@ -98,34 +100,31 @@ const updateSingleAdminUser = async (
     select: {
       id: true,
       name: true,
-      email: true,
-      password: false,
-      role: true,
+      bookings: true,
     },
   });
   return result;
 };
-const deleteSingleAdminUser = async (
+const deleteSingleService = async (
   id: string,
-): Promise<Partial<IUserResponse>> => {
-  const result = await prisma.admin.delete({
+): Promise<Partial<IServiceResponse>> => {
+  const result = await prisma.service.delete({
     where: {
       id,
     },
     select: {
       id: true,
       name: true,
-      email: true,
-      password: false,
+      bookings: true,
     },
   });
   return result;
 };
 
-export const UserService = {
-  // createUser,
-  getAllAdminUsers,
-  getSingleAdminUser,
-  updateSingleAdminUser,
-  deleteSingleAdminUser,
+export const ServiceService = {
+  createService,
+  getAllServices,
+  getSingleService,
+  updateSingleService,
+  deleteSingleService,
 };

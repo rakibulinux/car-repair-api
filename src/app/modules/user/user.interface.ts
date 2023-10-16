@@ -2,7 +2,6 @@ export type IUserFilterRequest = {
   searchTerm?: string | undefined;
   name?: string | undefined;
   email?: string | undefined;
-  contactNo?: string | undefined;
 };
 
 export type IUserResponse = {
@@ -10,7 +9,15 @@ export type IUserResponse = {
   name: string;
   email: string;
   role: string;
-  profileImg?: string;
   createdAt: Date;
   updatedAt: Date;
+};
+export type IUserProfile = {
+  name: string;
+  bio: string;
+  phoneNo: string;
+  bloodGroup: string;
+  gender: string;
+  address: string;
+  profileImg: string;
 };

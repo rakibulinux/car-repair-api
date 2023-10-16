@@ -8,10 +8,22 @@ import { userFilterableFields } from './user.constant';
 import { IUserResponse } from './user.interface';
 import { UserService } from './user.service';
 
-const getAllUser = catchAsync(async (req: Request, res: Response) => {
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields);
   const pagination = pick(req.query, paginationFields);
   const result = await UserService.getAllUsers(filters, pagination);
+  sendResponse<Partial<IUserResponse[]>>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Get All Users Successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+const getAllAdmins = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, userFilterableFields);
+  const pagination = pick(req.query, paginationFields);
+  const result = await UserService.getAllAdmins(filters, pagination);
   sendResponse<Partial<IUserResponse[]>>(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -55,8 +67,9 @@ const deleteSingleUser = catchAsync(async (req: Request, res: Response) => {
 
 export const UserController = {
   // createUser,
-  getAllUser,
+  getAllUsers,
   getSingleUser,
   updateSingleUser,
   deleteSingleUser,
+  getAllAdmins,
 };

@@ -1,16 +1,14 @@
-export type IUserFilterRequest = {
+export type ICategoryFilterRequest = {
   searchTerm?: string | undefined;
   name?: string | undefined;
   email?: string | undefined;
   contactNo?: string | undefined;
 };
 
-export type IUserResponse = {
+export type ICategoryResponse = {
   id: string;
   name: string;
-  email: string;
-  role: string;
-  profileImg?: string;
   createdAt: Date;
   updatedAt: Date;
+  postId: string | null;
 };
