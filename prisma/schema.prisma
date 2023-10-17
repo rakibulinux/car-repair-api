@@ -57,20 +57,25 @@ model Profile {
 
 // Define the Service model
 model Service {
-  id           String    @id @default(uuid()) // Unique service ID
+  id           String              @id @default(uuid()) // Unique service ID
   name         String // Service name
   description  String? // Service description
   price        Float // Service price
-  category     Category  @relation(fields: [categoryId], references: [id]) // Service category
-  availability Boolean
+  category     Category            @relation(fields: [categoryId], references: [id]) // Service category
+  availability ServiceAvailability
   image        String
   categoryId   String
   reviews      Review[]
   bookings     Booking[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 
   @@map("services")
+}
+
+enum ServiceAvailability {
+  Available
+  Upcoming
 }
 
 // Define the Category model

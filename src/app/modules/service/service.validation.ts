@@ -1,4 +1,6 @@
+import { ServiceAvailability } from '@prisma/client';
 import { z } from 'zod';
+const serviceAvailabilityArray = Object.values(ServiceAvailability);
 
 const createServiceZodSchema = z.object({
   body: z.object({
@@ -14,9 +16,10 @@ const createServiceZodSchema = z.object({
     categoryId: z.string({
       required_error: 'Service categoryId is Required',
     }),
-    availability: z.boolean({
-      required_error: 'Service availability is Required',
-    }),
+    availability: z.enum([...serviceAvailabilityArray] as [
+      string,
+      ...string[],
+    ]),
     image: z.string({
       required_error: 'Service image is Required',
     }),
@@ -28,7 +31,9 @@ const updateServiceZodSchema = z.object({
     description: z.string().optional(),
     price: z.number().optional(),
     categoryId: z.string().optional(),
-    availability: z.boolean().optional(),
+    availability: z
+      .enum([...serviceAvailabilityArray] as [string, ...string[]])
+      .optional(),
     image: z.string().optional(),
   }),
 });
