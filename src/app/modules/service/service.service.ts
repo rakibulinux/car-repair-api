@@ -80,10 +80,10 @@ const getSingleService = async (id: string) => {
     where: {
       id,
     },
-    select: {
-      id: true,
-      name: true,
+    include: {
       bookings: true,
+      reviews: true,
+      category: true,
     },
   });
   return result;
@@ -97,11 +97,6 @@ const updateSingleService = async (
       id,
     },
     data,
-    select: {
-      id: true,
-      name: true,
-      bookings: true,
-    },
   });
   return result;
 };
@@ -111,11 +106,6 @@ const deleteSingleService = async (
   const result = await prisma.service.delete({
     where: {
       id,
-    },
-    select: {
-      id: true,
-      name: true,
-      bookings: true,
     },
   });
   return result;
