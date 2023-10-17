@@ -3,7 +3,7 @@ import { createLogger, format, transports } from 'winston';
 const { combine, timestamp, label, printf } = format;
 
 //Customm Log Format
-
+console.log('first');
 const myFormat = printf(({ level, message, label, timestamp }) => {
   const date = new Date(timestamp);
   const hour = date.getHours();
