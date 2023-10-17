@@ -1,4 +1,4 @@
-import { Admin, PrismaClient, SuperAdmin, User } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import config from '../../../config';
 
@@ -35,20 +35,6 @@ export const UserModel = {
 };
 
 export const beforeUserSave = async (user: User): Promise<void> => {
-  if (user.password) {
-    const saltRounds = Number(config.bcrypt_salt_rounds);
-    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-    user.password = hashedPassword;
-  }
-};
-export const beforeAdminSave = async (user: Admin): Promise<void> => {
-  if (user.password) {
-    const saltRounds = Number(config.bcrypt_salt_rounds);
-    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-    user.password = hashedPassword;
-  }
-};
-export const beforeSuperAdminSave = async (user: SuperAdmin): Promise<void> => {
   if (user.password) {
     const saltRounds = Number(config.bcrypt_salt_rounds);
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
