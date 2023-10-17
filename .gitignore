@@ -2,4 +2,3 @@ node_modules
 .env
 logs
 .vercel
-dist
