@@ -1,8 +1,17 @@
 export type IServiceFilterRequest = {
   searchTerm?: string | undefined;
   name?: string | undefined;
-  email?: string | undefined;
-  contactNo?: string | undefined;
+  description?: string | undefined;
+  price?: string | undefined;
+  availability?: string | undefined;
+  categoryId?: string | undefined;
+};
+export type IServiceFilter = {
+  name?: string | undefined;
+  description?: string | undefined;
+  price?: string | undefined;
+  availability?: string | undefined;
+  categoryId?: string | undefined;
 };
 
 export type IServiceResponse = {

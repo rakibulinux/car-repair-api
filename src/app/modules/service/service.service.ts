@@ -18,15 +18,77 @@ const createService = async (data: Service): Promise<Service> => {
   return result;
 };
 
+// const getAllServices = async (
+//   filters: IServiceFilterRequest,
+//   pagination: IPaginationOptions,
+// ): Promise<IGenericResponse<Service[]>> => {
+//   const { searchTerm, ...filtersData } = filters;
+//   console.log('filtersData', filtersData, 'searchTerm', searchTerm);
+//   const { page, limit, skip, sortBy, sortOrder } =
+//     paginationHelpers.calculatePagination(pagination);
+//   const andConditions = [];
+//   // Search needs $or for searching in specified fields
+//   if (searchTerm) {
+//     andConditions.push({
+//       OR: serviceSearchableFields.map(field => ({
+//         [field]: {
+//           contains: searchTerm,
+//           mode: 'insensitive',
+//         },
+//       })),
+//     });
+//   }
+//   const whereConditions: Prisma.ServiceWhereInput =
+//     andConditions.length > 0 ? { AND: andConditions } : {};
+//   if (Object.keys(filtersData).length) {
+//     andConditions.push({
+//       AND: Object.entries(filtersData).map(([field, value]) => ({
+//         [field]: value,
+//       })),
+//     });
+//   }
+
+//   console.log('whereConditions', whereConditions);
+//   console.log('andConditions', andConditions);
+
+//   // Dynamic  Sort needs  field to  do sorting
+//   const sortConditions: { [key: string]: string } = {};
+//   if (sortBy && sortOrder) {
+//     sortConditions[sortBy] = sortOrder;
+//   }
+
+//   const result = await prisma.service.findMany({
+//     where: whereConditions,
+//     skip,
+//     take: limit,
+//     orderBy: sortConditions,
+//     include: {
+//       bookings: true,
+//       reviews: true,
+//       category: true,
+//     },
+//   });
+
+//   const total = await prisma.service.count();
+//   return {
+//     meta: {
+//       total,
+//       page,
+//       limit,
+//     },
+//     data: result,
+//   };
+// };
+
 const getAllServices = async (
   filters: IServiceFilterRequest,
-  pagination: IPaginationOptions,
+  options: IPaginationOptions,
 ): Promise<IGenericResponse<Service[]>> => {
-  const { searchTerm, ...filtersData } = filters;
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(pagination);
+  const { limit, page, skip } = paginationHelpers.calculatePagination(options);
+  const { searchTerm, ...filterData } = filters;
+
   const andConditions = [];
-  // Search needs $or for searching in specified fields
+
   if (searchTerm) {
     andConditions.push({
       OR: serviceSearchableFields.map(field => ({
@@ -37,34 +99,41 @@ const getAllServices = async (
       })),
     });
   }
-  const whereConditions: Prisma.ServiceWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {};
-  if (Object.keys(filtersData).length) {
+
+  if (Object.keys(filterData).length > 0) {
     andConditions.push({
-      AND: Object.entries(filtersData).map(([field, value]) => ({
-        [field]: value,
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          equals: (filterData as any)[key],
+        },
       })),
     });
   }
-  // Dynamic  Sort needs  field to  do sorting
-  const sortConditions: { [key: string]: string } = {};
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder;
-  }
+
+  const whereConditions: Prisma.ServiceWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
 
   const result = await prisma.service.findMany({
+    include: {
+      category: true,
+      bookings: true,
+      reviews: true,
+    },
     where: whereConditions,
     skip,
     take: limit,
-    orderBy: sortConditions,
-    include: {
-      bookings: true,
-      reviews: true,
-      category: true,
-    },
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : {
+            createdAt: 'desc',
+          },
+  });
+  const total = await prisma.service.count({
+    where: whereConditions,
   });
 
-  const total = await prisma.service.count();
   return {
     meta: {
       total,
@@ -74,7 +143,6 @@ const getAllServices = async (
     data: result,
   };
 };
-
 const getSingleService = async (id: string) => {
   const result = await prisma.service.findUnique({
     where: {
