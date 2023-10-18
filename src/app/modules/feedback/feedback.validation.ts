@@ -2,14 +2,18 @@ import { z } from 'zod';
 
 const createFeedbackZodSchema = z.object({
   body: z.object({
-    name: z.string({
-      required_error: 'Feedback Name is Required',
+    comment: z.string({
+      required_error: 'Comment is Required',
+    }),
+    userId: z.string({
+      required_error: 'UserId is Required',
     }),
   }),
 });
 const updateFeedbackZodSchema = z.object({
   body: z.object({
-    name: z.string().optional(),
+    comment: z.string().optional(),
+    userId: z.string().optional(),
   }),
 });
 

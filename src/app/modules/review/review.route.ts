@@ -9,26 +9,34 @@ const router = express.Router();
 
 router.patch(
   '/:id',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   validateRequest(ReviewValidation.updateReviewZodSchema),
   ReviewController.updateSingleReview,
 );
 router.post(
   '/',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   validateRequest(ReviewValidation.createReviewZodSchema),
   ReviewController.createReview,
 );
 
-router.get(
-  '/:id',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
-  ReviewController.getSingleReview,
-);
+router.get('/:id', ReviewController.getSingleReview);
 
 router.delete(
   '/:id',
-  auth(ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   ReviewController.deleteSingleReview,
 );
 
