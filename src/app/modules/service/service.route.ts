@@ -20,11 +20,7 @@ router.post(
   ServiceController.createService,
 );
 
-router.get(
-  '/:id',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
-  ServiceController.getSingleService,
-);
+router.get('/:id', ServiceController.getSingleService);
 
 router.delete(
   '/:id',
