@@ -3,6 +3,10 @@ import { AuthRoute } from '../modules/auth/auth.route';
 
 import { CategoryRoute } from '../modules/category/category.route';
 
+import { BookingRoute } from '../modules/booking/booking.route';
+import { FeedbackRoute } from '../modules/feedback/feedback.route';
+import { PostRoute } from '../modules/post/post.route';
+import { ReviewRoute } from '../modules/review/review.route';
 import { ServiceRoute } from '../modules/service/service.route';
 import { UserRoute } from '../modules/user/user.route';
 
@@ -26,6 +30,22 @@ const moduleRoutes = [
   {
     path: '/services',
     route: ServiceRoute,
+  },
+  {
+    path: '/posts',
+    route: PostRoute,
+  },
+  {
+    path: '/feedback',
+    route: FeedbackRoute,
+  },
+  {
+    path: '/reviews',
+    route: ReviewRoute,
+  },
+  {
+    path: '/bookings',
+    route: BookingRoute,
   },
 ];
 
