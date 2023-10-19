@@ -65,6 +65,7 @@ model Service {
   availability ServiceAvailability
   image        String
   categoryId   String
+  location     String?
   reviews      Review[]
   bookings     Booking[]
   createdAt    DateTime            @default(now())
@@ -94,16 +95,19 @@ model Category {
 
 // Define the Booking model
 model Booking {
-  id        String        @id @default(uuid()) // Unique booking ID
-  userId    String // Foreign key to User
-  serviceId String // Foreign key to Service
-  status    BookingStatus @default(PENDING)
-  dateTime  DateTime // Date and time of the booking
+  id              String        @id @default(uuid()) // Unique booking ID
+  userId          String // Foreign key to User
+  serviceId       String // Foreign key to Service
+  status          BookingStatus @default(PENDING)
+  dateTime        DateTime // Date and time of the booking
+  make            String? // Make of the vehicle (e.g., Toyota, Honda)
+  model           String? // Model of the vehicle (e.g., Camry, Civic)
+  manufactureYear Int? // Manufacture year of the vehicle
   // Add other booking-related fields if needed
-  user      User          @relation(fields: [userId], references: [id])
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  services  Service       @relation(fields: [serviceId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  services        Service       @relation(fields: [serviceId], references: [id])
 
   @@map("bookings")
 }
@@ -181,12 +185,13 @@ model Post {
 }
 
 model Feedback {
-  id        String   @id @default(uuid())
-  comment   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  comment    String
+  suggestion String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("feedbacks")
 }

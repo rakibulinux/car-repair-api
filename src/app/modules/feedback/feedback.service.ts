@@ -59,7 +59,11 @@ const getAllFeedbacks = async (
     take: limit,
     orderBy: sortConditions,
     include: {
-      user: true,
+      user: {
+        include: {
+          profile: true,
+        },
+      },
     },
   });
 
@@ -80,7 +84,11 @@ const getSingleFeedback = async (id: string) => {
       id,
     },
     include: {
-      user: true,
+      user: {
+        include: {
+          profile: true,
+        },
+      },
     },
   });
   return result;

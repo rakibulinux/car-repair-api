@@ -10,7 +10,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://car-repair-steel.vercel.app'],
+    origin: true,
     credentials: true,
   }),
 );

@@ -36,7 +36,7 @@ const moduleRoutes = [
     route: PostRoute,
   },
   {
-    path: '/feedback',
+    path: '/feedbacks',
     route: FeedbackRoute,
   },
   {

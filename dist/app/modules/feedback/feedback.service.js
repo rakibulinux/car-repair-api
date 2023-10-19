@@ -70,7 +70,11 @@ const getAllFeedbacks = (filters, pagination) => __awaiter(void 0, void 0, void 
         take: limit,
         orderBy: sortConditions,
         include: {
-            user: true,
+            user: {
+                include: {
+                    profile: true,
+                },
+            },
         },
     });
     const total = yield prisma_1.default.feedback.count();
@@ -89,7 +93,11 @@ const getSingleFeedback = (id) => __awaiter(void 0, void 0, void 0, function* ()
             id,
         },
         include: {
-            user: true,
+            user: {
+                include: {
+                    profile: true,
+                },
+            },
         },
     });
     return result;

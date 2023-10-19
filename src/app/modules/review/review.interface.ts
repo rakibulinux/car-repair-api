@@ -1,8 +1,8 @@
 export type IReviewFilterRequest = {
   searchTerm?: string | undefined;
-  name?: string | undefined;
-  email?: string | undefined;
-  contactNo?: string | undefined;
+  serviceId?: string | undefined;
+  userId?: string | undefined;
+  comment?: string | undefined;
 };
 
 export type IReviewResponse = {
