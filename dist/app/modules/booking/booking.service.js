@@ -24,17 +24,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingService = void 0;
+const client_1 = require("@prisma/client");
+const http_status_1 = __importDefault(require("http-status"));
+const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const booking_constant_1 = require("./booking.constant");
 const createBooking = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.booking.create({
-        data,
-        include: {
-            services: true,
+    // Check if a booking with the same serviceId, userId, and status PENDING exists
+    const existingBooking = yield prisma_1.default.booking.findFirst({
+        where: {
+            serviceId: data.serviceId,
+            userId: data.userId,
+            status: client_1.BookingStatus.PENDING || client_1.BookingStatus.FIXING,
         },
     });
-    return result;
+    if (existingBooking) {
+        // A booking with the same criteria already exists, don't create a new one
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Booking already exsist');
+    }
+    else {
+        // Create a new booking
+        const result = yield prisma_1.default.booking.create({
+            data,
+            include: {
+                services: true,
+                user: true,
+            },
+        });
+        return result;
+    }
 });
 const getAllBookings = (filters, pagination) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
@@ -97,6 +116,7 @@ const getSingleBooking = (id) => __awaiter(void 0, void 0, void 0, function* () 
     return result;
 });
 const updateSingleBooking = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(id, data);
     const result = yield prisma_1.default.booking.update({
         where: {
             id,

@@ -1,4 +1,6 @@
-import { Booking, Prisma } from '@prisma/client';
+import { Booking, BookingStatus, Prisma } from '@prisma/client';
+import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
@@ -6,14 +8,30 @@ import prisma from '../../../shared/prisma';
 import { bookingSearchableFields } from './booking.constant';
 import { IBookingFilterRequest, IBookingResponse } from './booking.interface';
 
-const createBooking = async (data: Booking): Promise<Booking> => {
-  const result = await prisma.booking.create({
-    data,
-    include: {
-      services: true,
+const createBooking = async (data: Booking): Promise<Booking | null> => {
+  // Check if a booking with the same serviceId, userId, and status PENDING exists
+  const existingBooking = await prisma.booking.findFirst({
+    where: {
+      serviceId: data.serviceId,
+      userId: data.userId,
+      status: BookingStatus.PENDING || BookingStatus.FIXING,
     },
   });
-  return result;
+
+  if (existingBooking) {
+    // A booking with the same criteria already exists, don't create a new one
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Booking already exsist');
+  } else {
+    // Create a new booking
+    const result = await prisma.booking.create({
+      data,
+      include: {
+        services: true,
+        user: true,
+      },
+    });
+    return result;
+  }
 };
 
 const getAllBookings = async (
@@ -88,6 +106,7 @@ const updateSingleBooking = async (
   id: string,
   data: Partial<Booking>,
 ): Promise<Partial<Booking>> => {
+  console.log(id, data);
   const result = await prisma.booking.update({
     where: {
       id,

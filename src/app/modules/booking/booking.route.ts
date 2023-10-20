@@ -9,20 +9,32 @@ const router = express.Router();
 
 router.patch(
   '/:id',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   validateRequest(BookingValidation.updateBookingZodSchema),
   BookingController.updateSingleBooking,
 );
 router.post(
   '/',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   validateRequest(BookingValidation.createBookingZodSchema),
   BookingController.createBooking,
 );
 
 router.get(
   '/:id',
-  auth(ENUM_USER_ROLE.SUPERADMIN, ENUM_USER_ROLE.ADMIN),
+  auth(
+    ENUM_USER_ROLE.SUPERADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CUSTOMER,
+  ),
   BookingController.getSingleBooking,
 );
 

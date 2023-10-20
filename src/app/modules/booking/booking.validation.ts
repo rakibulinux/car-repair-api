@@ -5,26 +5,28 @@ const createBookingZodSchema = z.object({
     userId: z.string({
       required_error: 'UserId Is Required',
     }), // Foreign key to User
+    make: z.string({
+      required_error: 'Make Is Required',
+    }), // Foreign key to User
+    model: z.string({
+      required_error: 'Model Is Required',
+    }), // Foreign key to User
     serviceId: z.string({
       required_error: 'ServiceId Is Required',
     }), // Foreign key to Service
-    status: z.enum(['PENDING', 'CONFIRMED', 'CANCELLED'] as [
-      string,
-      ...string[],
-    ]), // Booking status
-    dateTime: z.date({
-      required_error: 'Date Time Is Required in date format',
+    date: z.string({
+      required_error: 'Date Time Is Required in string format',
+    }), // Date and time of the booking
+    time: z.string({
+      required_error: 'Date Time Is Required in string format',
     }), // Date and time of the booking
   }),
 });
 const updateBookingZodSchema = z.object({
   body: z.object({
-    userId: z.string().optional(), // Foreign key to User
-    serviceId: z.string().optional(), // Foreign key to Service
     status: z
-      .enum(['PENDING', 'CONFIRMED', 'CANCELLED'] as [string, ...string[]])
+      .enum(['PENDING', 'FIXING', 'FIXED', 'CANCELED'] as [string, ...string[]])
       .optional(), // Booking status
-    dateTime: z.date().optional(), // Date and time of the booking,
   }),
 });
 

@@ -99,10 +99,11 @@ model Booking {
   userId          String // Foreign key to User
   serviceId       String // Foreign key to Service
   status          BookingStatus @default(PENDING)
-  dateTime        DateTime // Date and time of the booking
+  date            String // Date and time of the booking
+  time            String
   make            String? // Make of the vehicle (e.g., Toyota, Honda)
   model           String? // Model of the vehicle (e.g., Camry, Civic)
-  manufactureYear Int? // Manufacture year of the vehicle
+  manufactureYear String? // Manufacture year of the vehicle
   // Add other booking-related fields if needed
   user            User          @relation(fields: [userId], references: [id])
   createdAt       DateTime      @default(now())
